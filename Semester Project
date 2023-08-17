@@ -1,0 +1,66 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+struct User {
+    string username;
+    string password;
+};
+
+bool isUserExist(const string& username) {
+    ifstream file("database.txt");
+    string line;
+    while (getline(file, line)) {
+        if (line == username) {
+            file.close();
+            return true;
+        }
+    }
+    file.close();
+    return false;
+}
+
+void registerUser(const User& user) {
+    ofstream file("database.txt", ios::app);
+    file << user.username << endl;
+    file << user.password << endl;
+    file.close();
+    cout << "Registration successful!" << endl;
+}
+
+bool loginUser(const User& user) {
+    ifstream file("database.txt");
+    string username, password;
+    while (getline(file, username) && getline(file, password)) {
+        if (username == user.username && password == user.password) {
+            file.close();
+            return true;
+        }
+    }
+    file.close();
+    return false;
+}
+
+int main() {
+    User user;
+    cout << "Username: ";
+    cin >> user.username;
+    cout << "Password: ";
+    cin >> user.password;
+
+    if (isUserExist(user.username)) {
+        cout << "User already exists!" << endl;
+    } else {
+        registerUser(user);
+    }
+
+    if (loginUser(user)) {
+        cout << "Login successful!" << endl;
+    } else {
+        cout << "Invalid username or password." << endl;
+    }
+
+    return 0;
+}
